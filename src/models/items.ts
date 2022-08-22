@@ -1,6 +1,6 @@
 import {supabase} from '~/lib/api';
 
-interface Item {
+export interface Item {
   id: number;
   title: string;
   description: string;
@@ -8,7 +8,13 @@ interface Item {
 }
 
 export async function getAllItems() {
-  const {data: items} = await supabase.from<Item>('items').select('*');
+  const {data} = await supabase.from<Item>('items').select('*');
 
-  return items;
+  return data;
+}
+
+export async function insertItems(items: Array<Omit<Item, 'id'>>) {
+  const {data} = await supabase.from<Item>('items').insert(items);
+
+  return data;
 }
