@@ -7,6 +7,13 @@ export interface Item {
   imageUrl: string;
 }
 
+// Pagination on the server
+export async function getItems() {
+  const {data} = await supabase.from<Item>('items').select('*').range(0, 7);
+
+  return data;
+}
+
 export async function getAllItems() {
   const {data} = await supabase.from<Item>('items').select('*');
 
