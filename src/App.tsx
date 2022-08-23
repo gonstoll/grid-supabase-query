@@ -3,11 +3,24 @@ import {useItemsQuery} from './api/hooks';
 
 const Grid = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(1, 1fr);
   gap: 1rem;
+  width: 100%;
+  margin: 0 auto;
 
-  @media screen and (min-width: 767px) {
+  @media screen and (min-width: ${props => props.theme.breakpoints.sm}) {
+    max-width: ${props => props.theme.containerMaxWidths.sm};
+  }
+  @media screen and (min-width: ${props => props.theme.breakpoints.md}) {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: ${props => props.theme.containerMaxWidths.md};
+  }
+  @media screen and (min-width: ${props => props.theme.breakpoints.lg}) {
     grid-template-columns: repeat(4, 1fr);
+    max-width: ${props => props.theme.containerMaxWidths.lg};
+  }
+  @media screen and (min-width: ${props => props.theme.breakpoints.xl}) {
+    max-width: ${props => props.theme.containerMaxWidths.xl};
   }
 `;
 
@@ -18,7 +31,12 @@ const GridItem = styled.div`
 `;
 
 const GridImage = styled.div`
-  height: 250px;
+  height: 350px;
+
+  @media screen and (min-width: ${props => props.theme.breakpoints.sm}) {
+    height: 250px;
+  }
+
   img {
     height: 100%;
     width: 100%;
