@@ -4,7 +4,7 @@ import {QueryClientProvider, QueryClient} from '@tanstack/react-query';
 import {ReactQueryDevtools} from '@tanstack/react-query-devtools';
 import {ThemeProvider, createGlobalStyle} from 'styled-components';
 import App from './App';
-import AppTwo from './AppTwo';
+// import App from './AppTwo'; // Interchange these two to see client/server side pagination/search
 import {theme} from './theme';
 
 const queryClient = new QueryClient({
@@ -38,7 +38,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
       <ReactQueryDevtools initialIsOpen={false} />
       <ThemeProvider theme={theme}>
         <GlobalStyles />
-        <AppTwo />
+        <App />
       </ThemeProvider>
     </QueryClientProvider>
   </React.StrictMode>
