@@ -1,17 +1,27 @@
 import {useMutation, useQuery} from '@tanstack/react-query';
-import {getAllItems, getItemsByPage, insertItems, Item} from '~/models/items';
+import {getAllItems, getItems, insertItems, Item} from '~/models/items';
+
+export const queryKeys = {
+  all: ['items'] as const,
+  search: (page: number, search: string) =>
+    [...queryKeys.all, page, search] as const,
+};
 
 export function useItemsQuery() {
-  const {data, isError, isLoading} = useQuery(['items'], getAllItems);
+  const {data, isError, isLoading} = useQuery(queryKeys.all, getAllItems);
 
   return {data, isError, isLoading};
 }
 
-export function usePaginatedItemsQuery(page: number, pageSize: number) {
+export function useServerItemsQuery(
+  page: number,
+  pageSize: number,
+  search: string
+) {
   const {data, isError, isLoading} = useQuery(
-    ['items', page],
-    () => getItemsByPage(page, pageSize),
-    {keepPreviousData: true}
+    queryKeys.search(page, search),
+    () => getItems(page, pageSize, search),
+    {keepPreviousData: true, staleTime: 30000}
   );
 
   return {data, isError, isLoading};

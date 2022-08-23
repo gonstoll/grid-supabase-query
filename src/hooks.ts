@@ -46,3 +46,19 @@ export function usePagination<T>(data: T[], pageSize: number) {
     pagedData,
   };
 }
+
+export function useDebounce(search: string) {
+  const [debounced, setDebounced] = React.useState(() => search);
+
+  React.useEffect(() => {
+    const timeout = setTimeout(() => {
+      setDebounced(search);
+    }, 500);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [search]);
+
+  return {debounced};
+}

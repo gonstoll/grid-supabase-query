@@ -1,8 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import {QueryClientProvider, QueryClient} from '@tanstack/react-query';
+import {ReactQueryDevtools} from '@tanstack/react-query-devtools';
 import {ThemeProvider, createGlobalStyle} from 'styled-components';
 import App from './App';
+import AppTwo from './AppTwo';
 import {theme} from './theme';
 
 const queryClient = new QueryClient({
@@ -33,9 +35,10 @@ const GlobalStyles = createGlobalStyle`
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
+      <ReactQueryDevtools initialIsOpen={false} />
       <ThemeProvider theme={theme}>
         <GlobalStyles />
-        <App />
+        <AppTwo />
       </ThemeProvider>
     </QueryClientProvider>
   </React.StrictMode>

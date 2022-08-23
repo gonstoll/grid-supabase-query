@@ -7,20 +7,25 @@ export interface Item {
   imageUrl: string;
 }
 
-export async function getItemsByPage(page: number, pageSize: number) {
+export async function getItems(page: number, pageSize: number, title: string) {
   const offset = pageSize * (page - 1);
-  const {data} = await supabase.from<Item>('items').select('*').range(0, offset);
 
-  return data;
-}
+  if (!title) {
+    const {data} = await supabase
+      .from<Item>('items')
+      .select('*')
+      .range(offset, offset + pageSize - 1);
 
-export async function getItemsByTitle(title: string) {
-  const {data} = await supabase
-    .from<Item>('items')
-    .select('*')
-    .eq('title', title);
+    return {items: data, total: 40};
+  } else {
+    const {data} = await supabase
+      .from<Item>('items')
+      .select('*')
+      .range(offset, offset + pageSize - 1)
+      .textSearch('title', title);
 
-  return data;
+    return {items: data, total: 40};
+  }
 }
 
 export async function getAllItems() {
