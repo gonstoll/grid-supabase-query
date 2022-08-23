@@ -1,5 +1,5 @@
 import * as React from 'react';
-import styled from 'styled-components';
+import styled, {css} from 'styled-components';
 import {useItemsQuery} from './api/hooks';
 import {useSearch} from './hooks';
 
@@ -67,13 +67,21 @@ const ButtonsWrapper = styled.div`
   gap: 1rem;
 `;
 
-const Button = styled.button`
+const Button = styled.button<{isDisabled: boolean}>`
   appearance: none;
   border: none;
   border-radius: 0.5rem;
+  font-size: 1rem;
   background-color: ${props => props.theme.colors.text};
   color: ${props => props.theme.colors.primary};
   padding: 15px 30px;
+  ${props =>
+    props.isDisabled
+      ? css`
+          cursor: not-allowed;
+          opacity: 0.7;
+        `
+      : null};
 `;
 
 const Input = styled.input`
@@ -130,8 +138,15 @@ export default function App() {
         ))}
       </Grid>
       <ButtonsWrapper>
-        <Button onClick={() => handlePagination('prev')}>Previous page</Button>
-        <Button onClick={() => handlePagination('next')}>Next page</Button>
+        <Button isDisabled={page <= 1} onClick={() => handlePagination('prev')}>
+          Previous page
+        </Button>
+        <Button
+          isDisabled={page >= totalPages}
+          onClick={() => handlePagination('next')}
+        >
+          Next page
+        </Button>
       </ButtonsWrapper>
     </Container>
   );
