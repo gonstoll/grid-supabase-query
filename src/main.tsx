@@ -18,12 +18,7 @@ const queryClient = new QueryClient({
 
 const GlobalStyles = createGlobalStyle`
   html {
-    font-size: 13px;
     font-family: ${props => props.theme.font.fontFamily};
-
-    @media screen and (min-width: ${props => props.theme.breakpoints.sm}) {
-      font-size: 16px;
-    }
   }
 
   body {

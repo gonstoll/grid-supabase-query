@@ -59,8 +59,6 @@ export default function App() {
         placeholder="Search items"
       />
 
-      {!pagedData?.length && !isLoading ? <p>No results...</p> : null}
-
       <styled.Form onSubmit={handleSubmit} ref={formRef}>
         <h3>Create a new item</h3>
         <label htmlFor="title">
@@ -78,6 +76,8 @@ export default function App() {
 
         <styled.Button type="submit">Submit</styled.Button>
       </styled.Form>
+
+      {!pagedData?.length && !isLoading ? <p>No results...</p> : null}
 
       <styled.Grid>
         {pagedData?.map(item => (

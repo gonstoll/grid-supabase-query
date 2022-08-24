@@ -87,6 +87,7 @@ export const Input = styled.input`
   border: 1px solid ${props => props.theme.colors.text};
   border-radius: 0.5rem;
   height: 40px;
+  padding: 0.5rem;
 `;
 
 export const Form = styled.form`
@@ -94,4 +95,8 @@ export const Form = styled.form`
   margin: 1rem 0;
   border-radius: 0.5rem;
   padding: 1.25rem;
+
+  ${Input} {
+    margin-bottom: 0.5rem;
+  }
 `;
