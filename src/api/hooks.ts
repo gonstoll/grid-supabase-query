@@ -13,7 +13,7 @@ export function useItemsQuery() {
   return {data, isError, isLoading};
 }
 
-export function useServerItemsQuery(
+export function usePaginatedItemsQuery(
   page: number,
   pageSize: number,
   search: string

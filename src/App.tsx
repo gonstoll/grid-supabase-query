@@ -81,7 +81,7 @@ export default function App() {
 
       <styled.Grid>
         {pagedData?.map(item => (
-          <styled.GridItem key={item.id}>
+          <styled.GridItem key={item.id} data-testid="grid-item">
             <styled.GridImage>
               <img src={item.imageUrl} alt={item.title} loading="lazy" />
             </styled.GridImage>
