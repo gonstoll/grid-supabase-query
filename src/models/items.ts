@@ -35,7 +35,11 @@ export async function getAllItems() {
 }
 
 export async function insertItems(items: Array<Omit<Item, 'id'>>) {
-  const {data} = await supabase.from<Item>('items').insert(items);
+  const {data, error} = await supabase.from<Item>('items').insert(items);
+
+  if (error) {
+    throw error;
+  }
 
   return data;
 }

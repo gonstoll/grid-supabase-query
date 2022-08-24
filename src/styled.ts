@@ -64,7 +64,7 @@ export const ButtonsWrapper = styled.div`
   gap: 1rem;
 `;
 
-export const Button = styled.button<{isDisabled: boolean}>`
+export const Button = styled.button<{isDisabled?: boolean}>`
   appearance: none;
   border: none;
   border-radius: 0.5rem;
@@ -86,6 +86,12 @@ export const Input = styled.input`
   width: 100%;
   border: 1px solid ${props => props.theme.colors.text};
   border-radius: 0.5rem;
-  margin-bottom: 1rem;
   height: 40px;
+`;
+
+export const Form = styled.form`
+  border: 1px solid ${props => props.theme.colors.text};
+  margin: 1rem 0;
+  border-radius: 0.5rem;
+  padding: 1.25rem;
 `;
