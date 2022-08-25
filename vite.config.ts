@@ -12,6 +12,7 @@ export default defineConfig({
       '**/spec.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
     ],
     environment: 'jsdom',
+    watch: false,
   },
   server: {
     port: 3000,
