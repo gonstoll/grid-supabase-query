@@ -1,8 +1,10 @@
 import * as React from 'react';
-import {useItemsMutation, useItemsQuery} from './api/hooks';
+import {useQueryClient} from '@tanstack/react-query';
+import {queryKeys, useItemsMutation, usePaginatedItemsQuery} from './api/hooks';
 import {PER_PAGE} from './definitions';
-import {useSearch} from './hooks';
+import {getItems} from './models/items';
 import * as styled from './styled';
+import {useDebounce} from './hooks';
 
 interface FormElements extends HTMLFormControlsCollection {
   title: HTMLInputElement;
@@ -10,24 +12,34 @@ interface FormElements extends HTMLFormControlsCollection {
   imageUrl: HTMLInputElement;
 }
 
-export default function App() {
+export default function AppTwo() {
+  const queryClient = useQueryClient();
+
   const formRef = React.useRef<HTMLFormElement>(null);
-  const {data: itemsData, isLoading} = useItemsQuery();
+  const [page, setPage] = React.useState(1);
+  const [search, setSearch] = React.useState('');
+
+  const {debounced} = useDebounce(search);
+  const {data, isLoading} = usePaginatedItemsQuery(page, PER_PAGE, debounced);
   const {persistItems} = useItemsMutation();
 
-  const {search, handleChangeSearch, pagedData, page, setPage, totalPages} =
-    useSearch(itemsData || [], 'title', PER_PAGE);
+  const totalPages = data?.total || 0;
+  const hasMore =
+    data?.items &&
+    data.items.length >= PER_PAGE &&
+    page < totalPages / PER_PAGE;
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-    handleChangeSearch(event.currentTarget.value);
+    setPage(1);
+    setSearch(event.currentTarget.value);
   }
 
   function handlePagination(mode: 'prev' | 'next') {
-    if (!itemsData) return;
+    if (!data) return;
     if (mode === 'prev' && page > 1) {
       setPage(page - 1);
     }
-    if (mode === 'next' && page < totalPages) {
+    if (mode === 'next' && hasMore) {
       setPage(page + 1);
     }
   }
@@ -49,11 +61,20 @@ export default function App() {
     );
   }
 
+  React.useEffect(() => {
+    if (hasMore) {
+      queryClient.prefetchQuery(queryKeys.search(page + 1, debounced), () =>
+        getItems(page + 1, PER_PAGE, debounced)
+      );
+    }
+  }, [debounced, hasMore, page, queryClient]);
+
   return (
     <styled.Container>
       <styled.Input
         type="text"
         name="search"
+        role="search"
         value={search}
         onChange={handleChange}
         placeholder="Search items"
@@ -77,10 +98,10 @@ export default function App() {
         <styled.Button type="submit">Submit</styled.Button>
       </styled.Form>
 
-      {!pagedData?.length && !isLoading ? <p>No results...</p> : null}
+      {!data?.items?.length && !isLoading ? <p>No results...</p> : null}
 
       <styled.Grid>
-        {pagedData?.map(item => (
+        {data?.items?.map(item => (
           <styled.GridItem key={item.id} data-testid="grid-item">
             <styled.GridImage>
               <img src={item.imageUrl} alt={item.title} loading="lazy" />
@@ -92,7 +113,6 @@ export default function App() {
           </styled.GridItem>
         ))}
       </styled.Grid>
-
       <styled.ButtonsWrapper>
         <styled.Button
           isDisabled={page <= 1}
@@ -101,7 +121,7 @@ export default function App() {
           Previous page
         </styled.Button>
         <styled.Button
-          isDisabled={page >= totalPages}
+          isDisabled={!hasMore}
           onClick={() => handlePagination('next')}
         >
           Next page

@@ -1,10 +1,9 @@
+/** Just an exmaple component showing client side pagination and search */
 import * as React from 'react';
-import {useQueryClient} from '@tanstack/react-query';
-import {queryKeys, useItemsMutation, usePaginatedItemsQuery} from './api/hooks';
+import {useItemsMutation, useItemsQuery} from './api/hooks';
 import {PER_PAGE} from './definitions';
-import {getItems} from './models/items';
+import {useSearch} from './hooks';
 import * as styled from './styled';
-import {useDebounce} from './hooks';
 
 interface FormElements extends HTMLFormControlsCollection {
   title: HTMLInputElement;
@@ -12,34 +11,24 @@ interface FormElements extends HTMLFormControlsCollection {
   imageUrl: HTMLInputElement;
 }
 
-export default function AppTwo() {
-  const queryClient = useQueryClient();
-
+export default function App() {
   const formRef = React.useRef<HTMLFormElement>(null);
-  const [page, setPage] = React.useState(1);
-  const [search, setSearch] = React.useState('');
-
-  const {debounced} = useDebounce(search);
-  const {data, isLoading} = usePaginatedItemsQuery(page, PER_PAGE, debounced);
+  const {data: itemsData, isLoading} = useItemsQuery();
   const {persistItems} = useItemsMutation();
 
-  const totalPages = data?.total || 0;
-  const hasMore =
-    data?.items &&
-    data.items.length >= PER_PAGE &&
-    page < totalPages / PER_PAGE;
+  const {search, handleChangeSearch, pagedData, page, setPage, totalPages} =
+    useSearch(itemsData || [], 'title', PER_PAGE);
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setPage(1);
-    setSearch(event.currentTarget.value);
+    handleChangeSearch(event.currentTarget.value);
   }
 
   function handlePagination(mode: 'prev' | 'next') {
-    if (!data) return;
+    if (!itemsData) return;
     if (mode === 'prev' && page > 1) {
       setPage(page - 1);
     }
-    if (mode === 'next' && hasMore) {
+    if (mode === 'next' && page < totalPages) {
       setPage(page + 1);
     }
   }
@@ -61,20 +50,11 @@ export default function AppTwo() {
     );
   }
 
-  React.useEffect(() => {
-    if (hasMore) {
-      queryClient.prefetchQuery(queryKeys.search(page + 1, debounced), () =>
-        getItems(page + 1, PER_PAGE, debounced)
-      );
-    }
-  }, [debounced, hasMore, page, queryClient]);
-
   return (
     <styled.Container>
       <styled.Input
         type="text"
         name="search"
-        role="search"
         value={search}
         onChange={handleChange}
         placeholder="Search items"
@@ -98,10 +78,10 @@ export default function AppTwo() {
         <styled.Button type="submit">Submit</styled.Button>
       </styled.Form>
 
-      {!data?.items?.length && !isLoading ? <p>No results...</p> : null}
+      {!pagedData?.length && !isLoading ? <p>No results...</p> : null}
 
       <styled.Grid>
-        {data?.items?.map(item => (
+        {pagedData?.map(item => (
           <styled.GridItem key={item.id} data-testid="grid-item">
             <styled.GridImage>
               <img src={item.imageUrl} alt={item.title} loading="lazy" />
@@ -113,6 +93,7 @@ export default function AppTwo() {
           </styled.GridItem>
         ))}
       </styled.Grid>
+
       <styled.ButtonsWrapper>
         <styled.Button
           isDisabled={page <= 1}
@@ -121,7 +102,7 @@ export default function AppTwo() {
           Previous page
         </styled.Button>
         <styled.Button
-          isDisabled={!hasMore}
+          isDisabled={page >= totalPages}
           onClick={() => handlePagination('next')}
         >
           Next page
