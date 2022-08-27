@@ -2,8 +2,8 @@ import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import {render, waitFor} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {ThemeProvider} from 'styled-components';
-import App from './App';
-// import App from './AppTwo';
+import Home from './components/Home';
+// import Home from "./components/ClientHome";
 import {theme} from './theme';
 
 const queryClient = new QueryClient({
@@ -19,7 +19,7 @@ describe('Grid', () => {
     return render(
       <QueryClientProvider client={queryClient}>
         <ThemeProvider theme={theme}>
-          <App />
+          <Home />
         </ThemeProvider>
       </QueryClientProvider>
     );

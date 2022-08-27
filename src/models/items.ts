@@ -11,20 +11,20 @@ export async function getItems(page: number, pageSize: number, title: string) {
   const offset = pageSize * (page - 1);
 
   if (!title) {
-    const {data} = await supabase
+    const {data, count} = await supabase
       .from<Item>('items')
-      .select('*')
+      .select('*', {count: 'exact'})
       .range(offset, offset + pageSize - 1);
 
-    return {items: data, total: 40};
+    return {items: data, total: count || 40};
   } else {
-    const {data} = await supabase
+    const {data, count} = await supabase
       .from<Item>('items')
-      .select('*')
+      .select('*', {count: 'exact'})
       .range(offset, offset + pageSize - 1)
       .textSearch('title', title);
 
-    return {items: data, total: 40};
+    return {items: data, total: count};
   }
 }
 
